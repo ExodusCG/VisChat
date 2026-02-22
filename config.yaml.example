@@ -1,0 +1,50 @@
+# VisChat Configuration Template
+# Copy this file to config/config.yaml and modify as needed
+
+server:
+  host: "0.0.0.0"
+  port: 5180
+  debug: false
+
+ssl:
+  enabled: true
+  cert_file: "ssl/cert.pem"
+  key_file: "ssl/key.pem"
+
+language:
+  primary: "zh"
+  stt_language: "auto"
+  tts_voice: "zh-CN-XiaoxiaoNeural"
+
+stt:
+  model: "iic/SenseVoiceSmall"
+  device: "cpu"
+  language: "auto"
+
+tts:
+  backend: "edge_tts"
+  fallback: "gtts"
+  voice: "zh-CN-XiaoxiaoNeural"
+  speed: 1.0
+  pitch: 0
+
+vision_llm:
+  active_provider: "lmstudio"
+  lmstudio:
+    base_url: "http://localhost:11434/v1"
+    default_model: "your-model-name"
+    api_key: "lm-studio"
+  local_proxy:
+    base_url: "http://localhost:4141"
+    default_model: "claude-sonnet-4.6"
+    api_key: ""
+
+memory:
+  max_context_messages: 20
+  compact_threshold: 15
+  enable_long_term: true
+
+security:
+  enabled: true
+  secret_key: "change_this_to_a_random_secret_key"
+  token_expire_hours: 24

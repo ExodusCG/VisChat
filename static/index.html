@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CC_VisChat - 智能视觉对话</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <nav class="navbar">
+            <a href="#" class="navbar-brand">CC_VisChat</a>
+            <div class="navbar-actions">
+                <div class="user-menu">
+                    <button class="user-menu-trigger" id="user-menu-trigger">
+                        <span id="display-name">用户</span>
+                        <span>&#9662;</span>
+                    </button>
+                    <div class="user-menu-dropdown" id="user-menu-dropdown">
+                        <button class="user-menu-item" id="btn-settings">设置</button>
+                        <button class="user-menu-item" id="btn-change-password">修改密码</button>
+                        <button class="user-menu-item" id="btn-admin" style="display: none;">管理</button>
+                        <div class="user-menu-divider"></div>
+                        <button class="user-menu-item" id="btn-clear-memory">清除记忆</button>
+                        <div class="user-menu-divider"></div>
+                        <button class="user-menu-item danger" id="btn-logout">登出</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 视频预览区域 -->
+            <section class="video-section">
+                <div class="section-header">
+                    <h2 class="section-title">视频预览</h2>
+                    <div class="select-wrapper">
+                        <select id="camera-select">
+                            <option value="">选择摄像头...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <video id="video-preview" autoplay playsinline muted></video>
+                    <div class="video-placeholder" id="video-placeholder">
+                        <div class="video-placeholder-icon">&#128247;</div>
+                        <div>点击下方按钮启动摄像头</div>
+                    </div>
+                    <!-- 录音悬浮控件 -->
+                    <div class="video-recording-overlay" id="video-recording-overlay">
+                        <div class="recording-indicator" id="recording-indicator"></div>
+                        <span class="recording-text" id="recording-text">点击录音</span>
+                        <div class="volume-meter">
+                            <div class="volume-meter-fill" id="volume-meter-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-actions">
+                    <button class="btn btn-secondary" id="btn-start-camera">
+                        <span>&#128247;</span> 启动摄像头
+                    </button>
+                    <button class="btn btn-secondary" id="btn-capture">
+                        <span>&#128248;</span> 拍照
+                    </button>
+                    <button class="btn btn-primary recording-btn" id="btn-record">
+                        <span>&#127908;</span> 开始录音
+                    </button>
+                </div>
+            </section>
+
+            <!-- 对话历史区域 -->
+            <section class="chat-section">
+                <div class="section-header">
+                    <h2 class="section-title">对话历史</h2>
+                    <button class="btn btn-icon" id="btn-clear-chat" data-tooltip="清空对话">
+                        <span>&#128465;</span>
+                    </button>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="chat-empty" id="chat-empty">
+                        <div class="chat-empty-icon">&#128172;</div>
+                        <div>开始对话吧</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="text-input" placeholder="输入文字消息...">
+                    <button class="btn btn-icon" id="btn-upload-image" data-tooltip="上传图片" title="上传图片">
+                        <span>📎</span>
+                    </button>
+                    <button class="btn btn-primary" id="btn-send-text">发送</button>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                </div>
+                <!-- 待发送图片预览 -->
+                <div class="pending-image-preview" id="pending-image-preview" style="display: none;">
+                    <img id="pending-image-img" src="" alt="待发送图片">
+                    <button class="pending-image-remove" id="pending-image-remove">&times;</button>
+                    <span class="pending-image-hint">图片将随下条消息发送</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- 状态栏 -->
+        <footer class="status-bar">
+            <div class="status-item">
+                <span class="status-dot" id="connection-status-dot"></span>
+                <span id="connection-status-text">未连接</span>
+            </div>
+            <div class="status-item">
+                <span>模式: </span>
+                <span id="provider-mode">-</span>
+            </div>
+            <div class="status-item">
+                <span>模型: </span>
+                <span id="current-model">-</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">设置</h3>
+                <button class="modal-close" id="settings-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <div class="setting-group-title">外观</div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">深色主题</div>
+                            <div class="setting-description">切换深色/浅色显示模式</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-dark-theme">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <div class="setting-group-title">LLM 模式</div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">提供者</div>
+                            <div class="setting-description">选择视觉LLM服务提供者</div>
+                        </div>
+                        <div class="select-wrapper">
+                            <select id="setting-provider">
+                                <option value="lmstudio">LMStudio (隐私)</option>
+                                <option value="local_proxy">本地反代 (性能)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">模型</div>
+                            <div class="setting-description">选择要使用的视觉模型</div>
+                        </div>
+                        <div class="select-wrapper">
+                            <select id="setting-model">
+                                <option value="">加载中...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <div class="setting-group-title">语音</div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">自动播放TTS</div>
+                            <div class="setting-description">AI回复时自动播放语音</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-auto-tts" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">自动截图</div>
+                            <div class="setting-description">说话时自动捕获摄像头画面</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-auto-capture" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="settings-cancel">取消</button>
+                <button class="btn btn-primary" id="settings-save">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片预览模态框 -->
+    <div class="image-preview-modal" id="image-preview-modal">
+        <img id="image-preview-img" src="" alt="预览">
+    </div>
+
+    <!-- 修改密码模态框 -->
+    <div class="modal-overlay" id="password-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">修改密码</h3>
+                <button class="modal-close" id="password-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="old-password">当前密码</label>
+                    <input type="password" id="old-password" placeholder="输入当前密码">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">新密码</label>
+                    <input type="password" id="new-password" placeholder="输入新密码（至少6位）">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">确认新密码</label>
+                    <input type="password" id="confirm-password" placeholder="再次输入新密码">
+                </div>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="password-cancel">取消</button>
+                <button class="btn btn-primary" id="password-save">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知容器 -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- 隐藏的音频播放器 -->
+    <audio id="tts-audio" preload="auto" playsinline></audio>
+
+    <!-- JavaScript 模块 -->
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/websocket.js"></script>
+    <script src="/static/js/media.js"></script>
+    <script src="/static/js/ui.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

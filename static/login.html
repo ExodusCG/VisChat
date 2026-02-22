@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CC_VisChat - 登录</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>CC_VisChat</h1>
+                <p>音视频智能交互助手</p>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" placeholder="请输入用户名" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" placeholder="请输入密码" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" id="login-btn" class="btn btn-primary">
+                    <span id="login-btn-text">登录</span>
+                    <span id="login-btn-loading" class="loading-spinner hidden"></span>
+                </button>
+            </form>
+
+            <div style="margin-top: 24px; text-align: center;">
+                <label class="toggle-switch" data-tooltip="切换深色/浅色主题">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/static/js/auth.js"></script>
+    <script>
+        // 初始化主题
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('theme-toggle').checked = savedTheme === 'dark';
+
+        // 主题切换
+        document.getElementById('theme-toggle').addEventListener('change', function() {
+            const theme = this.checked ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        });
+
+        // 登录表单处理
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const loginBtn = document.getElementById('login-btn');
+            const btnText = document.getElementById('login-btn-text');
+            const btnLoading = document.getElementById('login-btn-loading');
+
+            // 清除错误信息
+            errorDiv.classList.remove('show');
+            errorDiv.textContent = '';
+
+            // 显示加载状态
+            loginBtn.disabled = true;
+            btnText.textContent = '登录中...';
+            btnLoading.classList.remove('hidden');
+
+            try {
+                const result = await Auth.login(username, password);
+
+                if (result.success) {
+                    // 登录成功，跳转到主页面
+                    window.location.href = '/static/index.html';
+                } else {
+                    // 显示错误信息
+                    errorDiv.textContent = result.message || '登录失败，请检查用户名和密码';
+                    errorDiv.classList.add('show');
+                }
+            } catch (error) {
+                errorDiv.textContent = '网络错误，请稍后重试';
+                errorDiv.classList.add('show');
+            } finally {
+                // 恢复按钮状态
+                loginBtn.disabled = false;
+                btnText.textContent = '登录';
+                btnLoading.classList.add('hidden');
+            }
+        });
+
+        // 检查是否已登录
+        (async function checkAuth() {
+            try {
+                const user = await Auth.getCurrentUser();
+                if (user) {
+                    // 已登录，跳转到主页面
+                    window.location.href = '/static/index.html';
+                }
+            } catch (e) {
+                // 未登录，保持在登录页面
+            }
+        })();
+    </script>
+</body>
+</html>

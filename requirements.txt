@@ -1,0 +1,43 @@
+# CC_VisChat 依赖清单
+# 版本: 0.1.0
+
+# ============ Web 框架 ============
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+python-multipart>=0.0.6
+
+# ============ 认证 ============
+python-jose[cryptography]>=3.3.0      # JWT
+passlib[bcrypt]>=1.7.4                # 密码哈希
+itsdangerous>=2.1.0                   # Session
+
+# ============ STT - SenseVoiceSmall ============
+# funasr>=1.0.0                       # FunASR 框架 (按需安装)
+# modelscope>=1.9.0                   # ModelScope 模型下载 (按需安装)
+sounddevice>=0.4.6
+numpy>=1.24.0
+
+# ============ TTS ============
+edge-tts>=6.1.0                       # EdgeTTS (主要)
+gtts>=2.5.0                           # GTTS (备用)
+pydub>=0.25.1                         # 音频转换
+
+# ============ LLM ============
+openai>=1.0.0                         # OpenAI 兼容 API
+httpx>=0.25.0                         # HTTP 客户端
+
+# ============ 存储 ============
+aiosqlite>=0.19.0                     # 异步 SQLite
+
+# ============ 工具 ============
+pyyaml>=6.0                           # YAML 配置
+python-dotenv>=1.0.0                  # 环境变量
+pillow>=10.0.0                        # 图片处理
+cryptography>=41.0.0                  # SSL 证书生成
+
+# ============ 开发工具 (可选) ============
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
+# black>=23.0.0
+# isort>=5.12.0

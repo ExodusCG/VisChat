@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# SSL certificates
+ssl/
+
+# Certificate generation scripts
+generate_cert.py
+generate_trusted_cert.py
+
+# Logs
+*.log
+
+# Test audio files
+test_*.mp3
+nul
+
+# User data
+data/
+
+# Config directory (sensitive - contains API keys, user credentials)
+config/
+
+# Docs directory (internal documentation)
+docs/
+
+# Project internal files
+backlog.txt
+CLAUDE.md
+DESIGN.md
+
+# Cache
+.cache/
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
